@@ -21,14 +21,15 @@ io.on('connection',(socket)=>{
         console.log(`User was disconencted`)
     })
 
-    socket.emit('newMessage',{
-        from:'user01',
-        text:'This is a test message',
-        createdAt:new Date().toUTCString()
-    })
+
 
     socket.on('createMessage',(data)=>{
-        console.log(`Message form front end`, data)
+        
+        io.emit('newMessage',{
+            from:data.from,
+            text:data.text,
+            createdAt:new Date().toUTCString()
+        })
     })
 
 
