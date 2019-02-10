@@ -3,6 +3,11 @@ const http = require('http');
 const express=require('express');
 const bodyparser=require('body-parser');
 const socketIO=require('socket.io');
+
+const {generateMessage}=require('./utils/message')
+
+
+
 const port=process.env.PORT||3000
 const app = express();
 var server=http.createServer(app);
@@ -14,7 +19,8 @@ app.use(express.static(publicPath))
 
 io.on('connection',(socket)=>{
     console.log(`New user connected`)
-
+    socket.emit('newMessage',generateMessage('Admin','Welcome new user'))
+    socket.broadcast.emit('newMessage',generateMessage('Admin','New user joined'))
 
     
     socket.on('disconnect',()=>{
@@ -25,11 +31,13 @@ io.on('connection',(socket)=>{
 
     socket.on('createMessage',(data)=>{
         
-        io.emit('newMessage',{
-            from:data.from,
-            text:data.text,
-            createdAt:new Date().toUTCString()
-        })
+        io.emit('newMessage',generateMessage(data.from,data.text))
+
+        // socket.broadcast.emit('newMessage',{
+        //     from:data.from,
+        //     text:data.text,
+        //     createdAt:new Date()
+        // })
     })
 
 
