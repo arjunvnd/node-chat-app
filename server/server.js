@@ -29,15 +29,11 @@ io.on('connection',(socket)=>{
 
 
 
-    socket.on('createMessage',(data)=>{
-        
+    socket.on('createMessage',(data,callback)=>{
+        callback('Got the message on the server')
         io.emit('newMessage',generateMessage(data.from,data.text))
 
-        // socket.broadcast.emit('newMessage',{
-        //     from:data.from,
-        //     text:data.text,
-        //     createdAt:new Date()
-        // })
+
     })
 
 
