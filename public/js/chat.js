@@ -6,7 +6,24 @@ const inputEl=document.querySelector('#message')
 const submitBtn=document.querySelector('.btn')
 const messageForm=document.querySelector('#message-form')
 const locationBtn=document.querySelector('#send-location')
-const olEl=document.querySelector('#messages')
+const olEl=jQuery('#messages')
+
+function scrollToBottom(){
+    //selectors
+    let newMessage=olEl.children('li:last-child')
+    
+
+    //Heights
+    let clientHeight=olEl.prop('clientHeight')
+    let scrollTop=olEl.prop('scrollTop')
+    let scrollHeight=olEl.prop('scrollHeight')
+    let newMessageHeight=newMessage.innerHeight()
+    let lastMessageHeight=newMessage.prev().innerHeight()
+    
+    if(clientHeight+scrollTop+newMessageHeight+lastMessageHeight>=scrollHeight){
+        olEl.scrollTop(scrollHeight)
+    }
+}
 
 socket.on('connect',function(){
     console.log(`Connected to server`)    
@@ -28,12 +45,16 @@ socket.on('newMessage',function(message){
 
     // console.log(typeof(html))
     jQuery('#messages').append(html)
+    scrollToBottom()
     // 
     // console.log(`New Message !! ` , message)
     // let liEl=document.createElement('li')
     // liEl.textContent=`${message.from} ${formattedTime}:${message.text}`
     // olEl.appendChild(liEl)
 })
+
+
+//New Location message printer
 socket.on('newLocationMessage',function(location){
 
     let formattedTime=moment(message.createdAt).format('h:mm a')
@@ -44,7 +65,7 @@ socket.on('newLocationMessage',function(location){
         url:location.url
     })
     jQuery('#messages').append(html)
-    
+    scrollToBottom()
     // let liEl=document.createElement('li')
     // let aEl=document.createElement('a')
     // aEl.setAttribute('target','_blank')
@@ -56,7 +77,7 @@ socket.on('newLocationMessage',function(location){
     // console.log(olEl)
 })
 
-//Event Listner for submition
+//Event Listner for submition of new messages
 
 messageForm.addEventListener('submit',function(e){
 
@@ -71,6 +92,7 @@ messageForm.addEventListener('submit',function(e){
 
 })
 
+//Location sender function
 locationBtn.addEventListener('click',function(){
     
     if(!navigator.geolocation){
