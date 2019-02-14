@@ -27,6 +27,15 @@ function scrollToBottom(){
 
 socket.on('connect',function(){
     console.log(`Connected to server`)    
+    let parms=jQuery.deparam(window.location.search)
+    socket.emit('join',parms,function(err){
+        if(err){
+            window.location.href='/';
+            alert(err)
+        }else{
+            console.log(`No error`)
+        }
+    })
 })
 
 socket.on('disconnect',function(){
@@ -77,12 +86,20 @@ socket.on('newLocationMessage',function(location){
     // console.log(olEl)
 })
 
+socket.on('updateUserList',function(users){
+    // console.log('User list',users)
+    let ol=jQuery('<ol></ol>')
+    users.forEach(user=>{
+        ol.append(jQuery('<li></li>').text(user))
+    })
+    jQuery('#users').html(ol)
+})
+
 //Event Listner for submition of new messages
 
 messageForm.addEventListener('submit',function(e){
 
     socket.emit('createMessage',{
-        from:'User',
         text:inputEl.value
     },function(){
         inputEl.value=''
